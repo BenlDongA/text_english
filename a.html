@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Question Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            text-align: center;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 5px; /* Thêm khoảng cách giữa các nút */
+        }
+
+        #answer-display {
+            margin-top: 20px; /* Khoảng cách giữa câu hỏi và câu trả lời */
+            font-size: 16px;
+            color: #555;
+            display: none; /* Ẩn câu trả lời ban đầu */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Random Question Generator</h1>
+        <button id="generate-button">Generate Question</button>
+        <button id="read-again-button" style="display: none;">Read Again</button>
+        <button id="toggle-answer-button" style="display: none;">Show Answer</button> <!-- Nút Show/Hide Answer -->
+        <p id="question-display"></p>
+        <p id="answer-display"></p> <!-- Phần hiển thị câu trả lời -->
+    </div>
+    <script>
+        const questions = [
+            // Các câu hỏi hiện tại
+            "How do you keep in touch with your friends?",
+            "How do you start a conversation when you meet someone for the first time?",
+            "Where do you usually meet new people?",
+            "How often do you video call friends and relatives?",
+            "Where did you go on your last holiday?",
+            "Where do you like to go on holiday?",
+            "Do you like to try new things on holidays?",
+            "What’s your favorite way of travelling?",
+            "Do you enjoy going shopping?",
+            "Which shops do you like going to?",
+            "Have you ever bought anything unusual in an online sale?",
+            "How often do you go to a supermarket?",
+            "How often do you go to a party?",
+            "What’s the biggest party you’ve ever been to?",
+            "Do you celebrate your birthday? What do you do?",
+            "What celebrations are important in your country?",
+            "What can you do if you need a job?",
+            "Have you ever had a summer job or a part-time job? What was it?",
+            "Which job would you most like to do?",
+            "Is it easy to find work where you live?",
+            // Thêm câu hỏi mới
+            "Have you been on a really long journey? (Where did you go?)",
+            "Which do you prefer, travelling by car or travelling by bus? (Why?)",
+            "Have you ever been on an airplane? (Did you enjoy it?)",
+            "Is it important for people to think about the environment when they choose how to travel? (Why?/Why not?)",
+            "What was the last present you bought for someone?",
+            "What would you most like to buy if you had enough money? (Why?)",
+            "What habits can you do to spend less money?",
+            "Can having a lot of money be a problem for some people? (How?)",
+            "Do you enjoy city life or would you rather live in the countryside? (Why?)",
+            "When you visit a place do you go sightseeing? (Why/Why not?)",
+            "What kind of entertainment can you enjoy in a city?",
+            "Which city would you like to visit if you could? (Why?)",
+            "Which jobs are the most dangerous ones? (Why?)",
+            "Are there jobs that are only for women or only for men?",
+            "What should someone look for in a job?",
+            "If money weren't a problem for you, which job would you prefer to have? (Why?)"
+        ];
+    
+        const answers = [
+            // Các câu trả lời hiện tại
+            "I usually keep in touch with my friends by messaging or social media.",
+            "When I meet someone for the first time, I often start by introducing myself and asking a simple question.",
+            "I usually meet new people at school, work, or social events.",
+            "I video call my friends and family about once or twice a month.",
+            "I went to the beach on my last holiday because I love swimming in the sea.",
+            "I like going to the mountains or cities with nice weather on holiday.",
+            "Yes, I enjoy trying new activities or foods during holidays.",
+            "My favorite way to travel is by train because it’s comfortable and I can enjoy the view.",
+            "No, I don't like shopping; I only buy things when really necessary.",
+            "I like going to clothing and electronic shops.",
+            "I bought a dog-shaped watch just because it was funny.",
+            "I go to the supermarket about once a week to buy food for the week.",
+            "I don’t go to parties often, maybe once every few months.",
+            "The biggest party I’ve been to was a wedding with many guests.",
+            "Yes, I celebrate my birthday with friends or family, usually with a small dinner.",
+            "In my country, important celebrations include New Year and national holidays.",
+            "If I need a job, I can search online or ask people I know.",
+            "Yes, I worked at an ice cream shop during the summer. It was fun!",
+            "The job I enjoy most is embedded programming engineer.",
+            "It’s not very easy to find work where I live,But if you try you will have a chance.",
+            // Thêm câu trả lời mới
+            "Last summer I went on a 2-week vacation to Nha Trang City. It's a very beautiful city.",
+            "I prefer to travel by car because it's more comfortable, I don't like the crowds on the bus.",
+            "I've never been on a plane. But I think it would be interesting.",
+            "Yes, we should choose green means of transport to protect the environment.",
+            "I bought a book and gave it to my sister for her birthday last year.",
+            "I would buy a new computer because it would help me study and entertain.",
+            "I think I would cook at home and limit going out and shopping.",
+            "I think having too much money will make them more likely to develop bad habits.",
+            "I prefer living in the countryside because it is peaceful and the air is fresh.",
+            "Yes, I like to explore new things and experience interesting things there.",
+            "In the city, you can watch movies and visit parks. There's always something fun to do!",
+            "I would like to go to Hanoi in the future because I like the peaceful environment here.",
+            "I think police work would be the most dangerous because they deal with a lot of crime.",
+            "No, I think men and women are equal and work does not discriminate between men and women.",
+            "People should look for a job that they love and that suits their skills.",
+            "I would be a teacher because I like teaching."
+        ];
+  
+
+        document.getElementById('generate-button').addEventListener('click', () => {
+            const randomIndex = Math.floor(Math.random() * questions.length);
+            const question = questions[randomIndex];
+            const answer = answers[randomIndex];
+
+            document.getElementById('question-display').textContent = question;
+            document.getElementById('answer-display').textContent = answer; // Hiển thị câu trả lời tương ứng
+            document.getElementById('answer-display').style.display = 'none'; // Ẩn câu trả lời ban đầu
+            document.getElementById('toggle-answer-button').style.display = 'inline'; // Hiện nút Show Answer
+            speakQuestion(question);
+            document.getElementById('read-again-button').style.display = 'inline'; // Hiện nút "Read Again"
+        });
+
+        document.getElementById('read-again-button').addEventListener('click', () => {
+            const question = document.getElementById('question-display').textContent;
+            speakQuestion(question);
+        });
+
+        document.getElementById('toggle-answer-button').addEventListener('click', () => {
+            const answerDisplay = document.getElementById('answer-display');
+            if (answerDisplay.style.display === 'none') {
+                answerDisplay.style.display = 'block'; // Hiện câu trả lời
+                document.getElementById('toggle-answer-button').textContent = 'Hide Answer'; // Đổi nút thành Hide Answer
+            } else {
+                answerDisplay.style.display = 'none'; // Ẩn câu trả lời
+                document.getElementById('toggle-answer-button').textContent = 'Show Answer'; // Đổi nút thành Show Answer
+            }
+        });
+
+        function speakQuestion(question) {
+            const speech = new SpeechSynthesisUtterance(question);
+            speech.lang = 'en-US'; // Đặt ngôn ngữ là tiếng Anh (Mỹ)
+            speech.pitch = 1.2; // Điều chỉnh cao độ (1.0 là bình thường)
+            speech.rate = 0.75; // Tốc độ nói (1.0 là bình thường)
+
+            // Lựa chọn giọng nói
+            const voices = window.speechSynthesis.getVoices();
+            speech.voice = voices.find(voice => voice.name === 'Google US English') || voices[0]; // Chọn giọng nói nếu có
+
+            window.speechSynthesis.speak(speech);
+        }
+    </script>
+</body>
+</html>
